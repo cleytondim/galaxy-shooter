@@ -12,6 +12,15 @@ public class Player : MonoBehaviour
     private GameObject _tripleShotPrefab;
 
     [SerializeField]
+    private GameObject _explosionPrefab;
+
+    [SerializeField]
+    private GameObject _shieldGameObject;
+
+    [SerializeField]
+    private GameObject[] _engines;
+
+    [SerializeField]
     private float _speed = 5.0f;
 
     [SerializeField]
@@ -20,14 +29,37 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int lifes = 3;
 
+    private int hitCount = 0;
+
+    [SerializeField]
+    private UIManager _uiManager;
+
+    [SerializeField]
+    private GameManager _gameManager;
+
+    private AudioSource _audioSource;
+
+    [SerializeField]
+    private bool isShieldActive = false;
+
     public bool canTripleShot = false;
 
 
     private float _nextFire = 0.0f;
+
     private void Start()
     {
-
         transform.position = new Vector3(0, 0, 0);
+        hitCount = 0;
+
+        _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if(_uiManager != null)
+        {
+            _uiManager.UpdateLives(lifes);
+        }
+
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -52,6 +84,7 @@ public class Player : MonoBehaviour
         else
             Instantiate(_laserPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity);
         _nextFire = Time.time + _fireRate;
+        _audioSource.Play();
     }
 
     
@@ -82,10 +115,24 @@ public class Player : MonoBehaviour
         }
     }
 
+    void Explode()
+    {
+
+        Destroy(this.gameObject);
+        Instantiate(_explosionPrefab, this.transform.position, Quaternion.identity);
+    }
+
     public void TripleShotPowerupOn()
     {
         canTripleShot = true;
         StartCoroutine(TripleShotPowerDownRoutine());
+    }
+
+    public void ShieldPowerupOn()
+    {
+        isShieldActive = true;
+        //this.transform.Find("Shields").gameObject.SetActive(true);
+        _shieldGameObject.SetActive(true);
     }
 
     public void SpeedPowerupOn()
@@ -108,10 +155,43 @@ public class Player : MonoBehaviour
 
     public void enemyDamage()
     {
+        if (isShieldActive)
+        {
+            isShieldActive = false;
+
+            //Debug.Log(this.transform.GetChild(0).name);
+            //Debug.Log(this.transform.Find("Shields").name);
+            //this.transform.Find("Shields").gameObject.SetActive(false);
+            _shieldGameObject.SetActive(false);
+            return;
+        }
         lifes--;
+        hitCount++;
+        if(hitCount <= 2)
+        {
+            bool affected = false;
+            int engineToFail = 0;
+            while (!affected)
+            {
+                engineToFail = Random.Range(0, 2);
+                if (!_engines[engineToFail].activeInHierarchy)
+                {
+                    _engines[engineToFail].SetActive(true);
+                    affected = true;
+                }
+            }
+        }
+
+        if (_uiManager != null)
+        {
+            _uiManager.UpdateLives(lifes);
+        }
+
+
         if (lifes <= 0)
         {
-            Destroy(this.gameObject);
+            Explode();
+            _gameManager.GameOver();
         }
     }
 }
