@@ -32,7 +32,7 @@ public class SpawnManager : MonoBehaviour
 
     public IEnumerator SpawnEnemyRoutine()
     {
-        while (!_gameManager.isGameOver())
+        while (!_gameManager.IsGameOver())
         {
             float randomX = Random.Range(-8, 9);
             Instantiate(_enemyShipPrefab, new Vector3(randomX, 6, 0), Quaternion.identity);
@@ -42,7 +42,7 @@ public class SpawnManager : MonoBehaviour
 
     public IEnumerator PowerupSpawnRoutine()
     {
-        while (!_gameManager.isGameOver())
+        while (!_gameManager.IsGameOver())
         {
             int randomPowerup = Random.Range(0, 3);
             Instantiate(_powerups[randomPowerup], new Vector3(Random.Range(-8, 9), 6, 0), Quaternion.identity);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -9,25 +10,37 @@ public class UIManager : MonoBehaviour
     public Sprite[] lives;
     public Image livesImageDisplay;
     public GameObject frozenScreen;
+    public GameObject pauseScreen;
     public Text scoreText;
     public Text gameOver;
+    public Text bestScoreText;
     public int score = 0;
-
+    public bool pause = false;
 
     private void Start()
     {
         gameOver.enabled = false;
     }
 
+
     public void UpdateLives(int currentLives)
     {
-      livesImageDisplay.sprite = lives[currentLives];
+        if(currentLives>=0)
+        {
+            livesImageDisplay.sprite = lives[currentLives];
+        }
+      
     }
 
     public void UpdateScore()
     {
         score += 10;
         scoreText.text = "Score: " + score;
+    }
+
+    public void SetBestScore(int bestScore)
+    {
+        bestScoreText.text = "Best: " + bestScore;
     }
 
     public void NewGame()
@@ -47,6 +60,12 @@ public class UIManager : MonoBehaviour
         NewGame();
         frozenScreen.SetActive(false);
         gameOver.enabled = false;
+    }
+
+    public void SetPause(bool pause)
+    {
+        pauseScreen.SetActive(pause);
+        
     }
 
 

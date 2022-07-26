@@ -5,7 +5,16 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Galaxy Shooter/_Scenes/Main_Menu.unity
+    guid: 56e6f2077bf21d849ae0799170f3d0fd
+  - enabled: 1
+    path: Assets/Galaxy Shooter/_Scenes/Single_Player.unity
+    guid: 0fc2fd3e12aa59c48be7b7cf8b3d2177
+  - enabled: 1
+    path: Assets/Galaxy Shooter/_Scenes/Co-Op_Mode.unity
+    guid: 77a77966339aead40af5399c54640a70
   m_configObjects: {}

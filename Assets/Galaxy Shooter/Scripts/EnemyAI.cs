@@ -37,8 +37,8 @@ public class EnemyAI : MonoBehaviour
             Player player = other.GetComponent<Player>();
             if (player != null)
             {
-                player.enemyDamage();
                 Explode();
+                player.enemyDamage();
             }
         }
         else if(other.tag == "PlayerLaser")

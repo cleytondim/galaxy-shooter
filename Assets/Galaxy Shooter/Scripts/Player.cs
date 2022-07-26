@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -47,31 +48,61 @@ public class Player : MonoBehaviour
 
     private float _nextFire = 0.0f;
 
+    private bool _isCoopMode = false;
+
+    public bool player1 = false;
+    public bool player2 = false;
+
     private void Start()
     {
-        transform.position = new Vector3(0, 0, 0);
-        hitCount = 0;
+        if (SceneManager.GetActiveScene().name != "Single_Player")
+        {
+            _isCoopMode = true;
+        }
 
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
-        if(_uiManager != null)
+        if (_uiManager != null)
         {
             _uiManager.UpdateLives(lifes);
         }
 
         _audioSource = GetComponent<AudioSource>();
+
+        hitCount = 0;
+
+        if (!_isCoopMode)
+        {
+            transform.position = new Vector3(0, 0, 0);
+        }
+        else
+        {
+            transform.position = new Vector3(Random.Range(-5, 6), -2, 0);
+        }
+
+
     }
 
     private void Update()
     {
-        Movement();
 
-        //if (Input.GetButton("Fire1"))
-        if((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && Time.time > _nextFire)
+        if (player1)
         {
-            Shot();
+            Movement();
+            //if (Input.GetButton("Fire1"))
+            if ((Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(0)) && Time.time > _nextFire)
+            {
+                Shot();
+            }
         }
-
+        else if (player2)
+        {
+            Movement2();
+            if ((Input.GetKeyDown(KeyCode.RightControl) || Input.GetMouseButtonDown(2)) && Time.time > _nextFire)
+            {
+                Shot();
+            }
+        }
     }
     
     private void Shot()
@@ -90,8 +121,12 @@ public class Player : MonoBehaviour
     
     private void Movement()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
+        //float horizontalInput = Input.GetAxis("Horizontal");
+        //float verticalInput = Input.GetAxis("Vertical");
+
+        float horizontalInput = (Input.GetKey(KeyCode.A) ? (-1) : (0)) + (Input.GetKey(KeyCode.D) ? (1) : (0));
+        float verticalInput = (Input.GetKey(KeyCode.W) ? (1) : (0)) + (Input.GetKey(KeyCode.S) ? (-1) : (0));
+
         transform.Translate(((Vector3.right * horizontalInput) + (Vector3.up * verticalInput)) * _speed * Time.deltaTime);
         //transform.Translate(Vector3.up * speed * verticalInput * Time.deltaTime);
         //transform.Translate(Vector3.right * speed * horizontalInput * Time.deltaTime);
@@ -115,10 +150,46 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void Movement2()
+    {
+        float horizontalInput = (Input.GetKey(KeyCode.LeftArrow) ? (-1) : (0)) + (Input.GetKey(KeyCode.RightArrow) ? (1) : (0));
+        float verticalInput = (Input.GetKey(KeyCode.UpArrow) ? (1) : (0)) + (Input.GetKey(KeyCode.DownArrow) ? (-1) : (0));
+
+        transform.Translate(((Vector3.right * horizontalInput) + (Vector3.up * verticalInput)) * _speed * Time.deltaTime);
+        //transform.Translate(Vector3.up * speed * verticalInput * Time.deltaTime);
+        //transform.Translate(Vector3.right * speed * horizontalInput * Time.deltaTime);
+
+        if (transform.position.y > 0)
+        {
+            transform.position = new Vector3(transform.position.x, 0, 0);
+        }
+        else if (transform.position.y < -4.2f)
+        {
+            transform.position = new Vector3(transform.position.x, -4.2f, 0);
+        }
+
+        if (transform.position.x > 9.5)
+        {
+            transform.position = new Vector3(-9.5f, transform.position.y, 0);
+        }
+        else if (transform.position.x < -9.5)
+        {
+            transform.position = new Vector3(9.5f, transform.position.y, 0);
+        }
+    }
+
+    
     void Explode()
     {
-
-        Destroy(this.gameObject);
+        if(_isCoopMode)
+        {
+            Destroy(GameObject.Find("CoOp_Players(Clone)"));
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+        
         Instantiate(_explosionPrefab, this.transform.position, Quaternion.identity);
     }
 
@@ -194,4 +265,5 @@ public class Player : MonoBehaviour
             _gameManager.GameOver();
         }
     }
+
 }

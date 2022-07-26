@@ -225,6 +225,8 @@ MonoBehaviour:
   _gameManager: {fileID: 0}
   isShieldActive: 0
   canTripleShot: 0
+  player1: 1
+  player2: 0
 --- !u!61 &84166819414750052
 BoxCollider2D:
   m_ObjectHideFlags: 0
